@@ -2,10 +2,20 @@
 <link rel="stylesheet" href="{{ url_for('static', filename= 'extended_beauty.css') }}"/>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='fixtures.css') }}">
 <style>
+:root {
+   --border_orange :#ffb09e;
+   --border_orange_light :#ffe4dd;
+}
 .plain-link {
   text-decoration: none !important; /* Removes underline */
   color: inherit;        /* Keeps color same as surrounding text */
   cursor: pointer;       /* Normal text cursor */
+}
+.border {
+  border:1px solid  var(--border_orange_light)
+}
+.border_orange {
+  border:1px solid  var(--border_orange)
 }
 </style>
 {% endblock %}
@@ -47,7 +57,7 @@
 {% if i[1] > current_date %}
 <a href="{{ url_for('main.FRScore', match=i[0]) }}" class="plain-link">
 <div class="main-container">
-  <div class="score-card">
+  <div class="score-card border">
     <div class="header">{{ i[1].strftime('%a, %d %b %Y') }}</div>
     <div class="match-info">{% if i[0] | int(default=None) is not none%}{{ num_suffix(i[0] | int) ~ " " ~ "Match" }}{% else %}{{ i[0] }}{% endif %} &bull; {{ i[2] }}</div>
     <!-- Team B -->
@@ -74,7 +84,7 @@
       <div class="result" style="color: #dc6604">Starts {{ i[1].strftime('%a, %d %b') }} &bull; {{ i[1].strftime('%I:%M %p') }} IST</div>
   </div>
 
-  <div class="timer-card">
+  <div class="timer-card border">
     <div class="header" style="text-align: center;">Match starts in</div>
 
       <div class="clockdiv" data-deadline="{{ i[1].strftime('%Y-%m-%dT%H:%M:%S') }}" style="padding-top: 20px">
@@ -101,7 +111,7 @@
 {% elif i[1] <= current_date and i[7] == 'TBA' %}
     <a href="{{ url_for('main.FRScore', match=i[0]) }}" class="plain-link">
 <div class="main-container">
-  <div class="score-card">
+  <div class="score-card border">
     <div class="header">{{ i[1].strftime('%a, %d %b %Y') }}</div>
     <div class="match-info">{% if i[0] | int(default=None) is not none%}{{ num_suffix(i[0] | int) ~ " " ~ "Match" }}{% else %}{{ i[0] }}{% endif %} &bull; {{ i[2] }}</div>
      <!-- Team A -->
@@ -127,7 +137,7 @@
       <!-- Result -->
       <div class="result blink" style="color: #c11616">Match is In-Progress</div>
   </div>
-  <div class="timer-card">
+  <div class="timer-card border">
     <div class="header" style="text-align: center;">Match is In-Progress</div>
       <div class="vsblock" style="padding-top: 35px;">
 		<img class="team-image" style="--c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c2'] }};" src="\static\images\squad_logos\{{ i[3] }}.webp" alt="Team Logo" />
@@ -140,7 +150,7 @@
 {% elif i[7] != 'TBA' %}
     <a href="{{ url_for('main.FRScore', match=i[0]) }}" class="plain-link">
 <div class="main-container">
-  <div class="score-card">
+  <div class="score-card border">
     <div class="header">{{ i[1].strftime('%a, %d %b %Y') }}</div>
     <div class="match-info">{% if i[0] | int(default=None) is not none%}{{ num_suffix(i[0] | int) ~ " " ~ "Match" }}{% else %}{{ i[0] }}{% endif %} &bull; {{ i[2] }}</div>
     {% if 'Super over' not in i[10] %}
@@ -189,7 +199,7 @@
   </div>
       <div class="result"><span class="team-name" full="{{ fn[i[7]] }}" short="{{ i[7] }}">{{ fn[i[7]] }}</span> {{ i[10] }}</div>
       </div>
-  <div class="timer-card">
+  <div class="timer-card border">
     <div class="header" style="text-align: center;">Match Completed</div>
       <div class="vsblock" style="padding-top: 10px;">
 		<img class="team-image" style="--c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c2'] }};" src="\static\images\squad_logos\{{ i[3] }}.webp" alt="Team Logo" />
