@@ -34,80 +34,6 @@
         margin-bottom: 1.5rem;
     }
 
-  /*  .points-table {
-        width: 95%;
-        max-width: 1200px;
-        margin: auto;
-        padding-left: 20px;
-        padding-right: 20px;
-        background-color: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(15px);
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .table-container {
-        overflow-y: hidden;
-        overflow-x: auto;
-    }
-
-    table.custom-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 5px;
-    }
-
-    th, td {
-        padding: 16px;
-        text-align: center;
-        font-size: 16px;
-        color: #000;
-        border: 1px solid #ccc;
-    }
-
-    th {
-        background: linear-gradient(135deg, #003366, #00509e, #007acc);
-        background-color: #00509e;
-        color: #fff;
-        text-transform: uppercase;
-        z-index: 50;
-        -webkit-transform: translate3d(0, 0, 0);
-    }
-
-    .trr {
-        background: linear-gradient(0deg, #003, #d53369, #003);
-    }
-
-    .trg {
-        background: linear-gradient(0deg, #003, #0056d2, #003);
-    }
-
-    tr:nth-child(odd) {
-        background-color: #f7b733;
-    }
-
-    tr:nth-child(even) {
-        background-color: #ff6b81;
-    }
-
-    tr:hover {
-        background-color: rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-        transform: scale(1.02);
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    }
-
-    th:nth-child(-n+3), td:nth-child(-n+3) {
-        position: sticky;
-        left: 0;
-        z-index: 10;
-        background-color: white;
-    }
-
-    th:nth-child(1) {
-        z-index: 11;
-    }*/
-
     .team-logo {
         border-radius: 50%;
         width: 20px;
@@ -157,12 +83,6 @@
             font-size: 32px;
         }
 
-        /*th, td {
-            padding: 12px;
-            font-size: 14px;
-            color: #000;
-        }*/
-
         .team-logo {
             width: 25px;
             height: 25px;
@@ -210,13 +130,6 @@
     .table-container::-webkit-scrollbar-thumb:hover {
         background-color: #f7b733;
     }
-
-    /*td:last-child {
-        white-space: nowrap;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        max-width: fit-content;
-    }*/
 </style>
 
 {% endblock %}
@@ -286,53 +199,7 @@
             </table>
         </section>
         </main>
-    <!--<div class="points-table">
-        <div class="table-container">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        {% for cols in PT[0] %}
-                            <th style="color: #fff">{{ cols }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for i in range(5) %}
-                    <tr>
-                        {% set color = "linear-gradient(0deg, #52c755, #bff4be, #52c755)" if i < 3 else "linear-gradient(0deg, #ee7272, #f6bdc0, #ee7272)" %}
-                        <td style="background: {{ color }}">{{ PT[1][i] }}</td>
-                            <td style="background: {{ color }}"><img src="{{ PT[2][i] }}" width="28" height="28" alt="user photo" class="team-logo" /></td>
-                            <td style="background: {{ color }}"><b>{{ PT[3][i] }}</b></td>
-                        {% for j in range(4, 8) %}
-                            <td style="background: {{ color }}">{{ PT[j][i] }}</td>
-                        {% endfor %}
-                        <td style="background: {{ color }}"><b>{{ PT[8][i] }}</b></td>
-                        <td style="background: {{ color }}"><b>{{ PT[9][i] }}</b></td>
-                        <td style="background: {{ color }};">
-                            {% for result in PT[10][i] %}
-                            {% if loop.last %}
-                                {% if result == 'W' %}
-                                    <img class="form-icon blink" src="/static/images/W.png" alt="win icon" />
-                                {% else %}
-                                    <img class="form-icon blink" src="/static/images/L.png" alt="loss icon" />
-                                {% endif %}
-                            {% else %}
-                                {% if result == 'W' %}
-                                    <img class="form-icon" src="/static/images/W.png" alt="win icon" />
-                                {% else %}
-                                    <img class="form-icon" src="/static/images/L.png" alt="loss icon" />
-                                {% endif %}
-                            {% endif %}
-
-                            {% endfor %}
-                        </td>
-                            <td style="background: {{ color }}">{{ PT[11][i] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>--></center>
+    </center>
 </div>
 
 <script>
