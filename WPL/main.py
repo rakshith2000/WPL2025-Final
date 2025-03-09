@@ -132,7 +132,7 @@ def index():
 def displayPT():
     dataPT = Pointstable.query.order_by(Pointstable.Points.desc(),Pointstable.NRR.desc(),Pointstable.id.asc()).all()
     dt = [['#', 'Logo', 'Teams', 'P', 'W', 'L', 'NR', 'Points', 'NRR', 'Last 5', 'Next Match'], [i for i in range(1,11)],\
-         [], [], [], [], [], [], [], [], [], []]
+         [], [], [], [], [], [], [], [], [], [], []]
     teams_ABV = []
     for i in dataPT:
         img = "/static/images/{}.png".format(i.team_name)
@@ -162,6 +162,7 @@ def displayPT():
         wl = ''.join(wl)
         dt[10].append(wl)
         dt[11].append(nm)
+        dt[12].append(i.qed)
     return render_template('displayPT.html', PT=dt, TABV=teams_ABV, clr=ptclr)
 
 @main.route('/fixtures')
@@ -488,4 +489,13 @@ def updateplayoffs():
         flash('{} Playoff teams updated successfully'.format(pomatch), category='success')
         return redirect(url_for('main.update', key=key))
 
-
+@main.route('/updatequalification', methods=['POST'])
+@login_required
+def updatequalification():
+    key = 4
+    qteam = request.form.get('qteam')
+    PT = Pointstable.query.filter_by(team_name=qteam).first()
+    PT.qed = True
+    db.session.commit()
+    flash('Updated Qualification status for {} successfully'.format(qteam), category='success')
+    return redirect(url_for('main.update', key=key))
