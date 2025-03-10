@@ -144,6 +144,8 @@
               <li class="d-inline-block bg-blue text-white rounded-1 text-center ball mt-1 mb-1">{{ ball }}</li>
               {% elif ball == 'W' %}
               <li class="d-inline-block bg-danger text-white rounded-1 text-center ball mt-1 mb-1">{{ ball }}</li>
+	      {% elif 'W' in ball %}
+              <li class="d-inline-block bg-danger text-white rounded-1 text-center ball mt-1 mb-1">{{ ball }}</li>
               {% else %}
 			  <li class="d-inline-block bg-light rounded-1 text-center ball mt-1 mb-1">{% if ball == 'x' %}{{ '-' }}{% else %}{{ ball }}{% endif %}</li>
               {% endif %}
