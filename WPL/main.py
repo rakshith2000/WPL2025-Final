@@ -225,6 +225,7 @@ def squad_details(team, name):
 def matchInfo(match):
     MatchDT = (db.session.execute(text('SELECT * FROM Fixture WHERE "Match_No" = :matchno'), {'matchno': match}).fetchall())[0]
     MatchURL = render_live_URL(MatchDT[4], MatchDT[5], match, MatchDT[2])
+    print(MatchURL)
     response = requests.get(MatchURL)
     MatchLDT = response.json()
     MatchDT2 = []
@@ -237,6 +238,7 @@ def matchInfo(match):
 def liveScore(match):
     MatchDT = (db.session.execute(text('SELECT * FROM Fixture WHERE "Match_No" = :matchno'),{'matchno': match}).fetchall())[0]
     MatchURL = render_live_URL(MatchDT[4], MatchDT[5], match, MatchDT[2])
+    print(MatchURL)
     response = requests.get(MatchURL)
     MatchLDT = response.json()
     MatchDT2 = []
@@ -249,6 +251,7 @@ def liveScore(match):
 def scoreCard(match):
     MatchDT = (db.session.execute(text('SELECT * FROM Fixture WHERE "Match_No" = :matchno'), {'matchno': match}).fetchall())[0]
     MatchURL = render_live_URL(MatchDT[4], MatchDT[5], match, MatchDT[2])
+    print(MatchURL)
     response = requests.get(MatchURL)
     MatchLDT = response.json()
     MatchDT2 = []
