@@ -79,13 +79,15 @@ def num_suffix(num):
         return str(num) + "th"
 
 def render_live_URL(tA, tB, mn, dt):
-    teamAB = liveTN[tA][1].replace(" ", "-").lower() + "-vs-" + liveTN[tB][1].replace(" ", "-").lower()
+    teamAB = liveTN[tA][1].replace(" ", "-").lower() + "-vs-" + liveTN[tB][1].replace(" ", "-").lower() + "-"
     if mn.isdigit():
-        matchNo = num_suffix(int(mn)) + "-match"
+        matchNo = num_suffix(int(mn)) + "-match" + "-"
+    elif mn in ['Eliminator', 'Final'] and tA != 'TBA' and tB != 'TBA':
+        matchNo = mn.lower() + '-'
     else:
-        matchNo = mn.lower() + "-wpl-2025"
+        matchNo = mn.lower() + "-wpl-2025" + '-'
     dt = dt.strftime("%d-%B-%Y").lower()
-    URL = liveURL_Prefix + teamAB + "-" + matchNo + "-" + dt + liveURL_Suffix
+    URL = liveURL_Prefix + teamAB + matchNo + dt + liveURL_Suffix
     return URL
 
 @main.route('/')
