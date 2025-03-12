@@ -228,6 +228,7 @@ def matchInfo(match):
     print(MatchURL)
     response = requests.get(MatchURL)
     MatchLDT = response.json()
+    print(MatchLDT)
     MatchDT2 = []
     MatchDT2.append(num_suffix(int(MatchDT[1]))+" Match" if MatchDT[1].isdigit() else MatchDT[1])
     MatchDT2.append(MatchDT[6].split(", ")[1])
