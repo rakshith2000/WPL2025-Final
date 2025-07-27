@@ -103,6 +103,25 @@ def render_live_URL(tA, tB, mn, dt):
     URL = liveURL_Prefix + teamAB + matchNo + dt + liveURL_Suffix
     return URL
 
+def calculate_age(dob, current_date):
+    # Calculate the number of full years
+    years = current_date.year - dob.year
+    has_birthday_passed = (current_date.month, current_date.day) >= (dob.month, dob.day)
+
+    # Adjust the years if the birthday has not yet occurred this year
+    if not has_birthday_passed:
+        years -= 1
+
+    # Calculate the last birthday date
+    last_birthday = dob.replace(year=current_date.year) if has_birthday_passed else dob.replace(
+        year=current_date.year - 1)
+
+    current_date = current_date.date()
+
+    # Calculate the number of days since the last birthday
+    days = (current_date - last_birthday).days
+    return str(years) + " years " + str(days) + " days"
+
 @main.route('/')
 def index():
     if db.session.execute(text('select count(*) from user')).scalar() == 0:
@@ -232,7 +251,10 @@ def squad(team):
 @main.route('/<team>/squad_details/<name>')
 def squad_details(team, name):
     sq = Squad.query.filter_by(Name=name).first()
-    return render_template('squad_details.html', sq=sq, clr=clr[team], team=team)
+    current_date = datetime.now(tz)
+    current_date = current_date.replace(tzinfo=None)
+    age = calculate_age(sq.DOB, current_date)
+    return render_template('squad_details.html', sq=sq, clr=clr[team], team=team, age=age)
 
 @main.route('/match-<match>/matchInfo')
 def matchInfo(match):
