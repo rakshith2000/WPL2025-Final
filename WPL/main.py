@@ -17,6 +17,14 @@ pofs = {'E':'Eliminator', 'F':'Final'}
 liveURL_Prefix = "https://cmc2.sportskeeda.com/live-cricket-score/"
 liveURL_Suffix = "/ajax"
 
+champions = {
+    'MIW':    ['2023', '2025'],
+    'UPW':   [],
+    'DCW':   [],
+    'RCBW':  ['2024'],
+    'GG':    []
+}
+
 full_name = {'DCW':'Delhi Capitals',
              'GG':'Gujarat Giants',
              'MIW':'Mumbai Indians',
@@ -128,9 +136,9 @@ def index():
         df = open('WPL/all teams squad wpl.csv', 'r')
         df = list(csv.reader(df))
         for i in df[1:]:
-            pl = Squad(Player_ID=i[0], Name=i[1], Team=i[2], Captain=i[3], Keeper=i[4], Overseas=i[5],\
-                       Role=i[6], Batting=i[7], Bowling=i[8], Nationality=i[9],\
-                       DOB=(datetime.strptime(i[10],'%d/%m/%Y')).date())
+            pl = Squad(Player_ID=i[0], Name=i[1], Team=i[2], Full_Name=i[3], Captain=i[4], Keeper=i[5], Overseas=i[6],\
+                       Role=i[7], Batting=i[8], Bowling=i[9], Nationality=i[10],\
+                       DOB=(datetime.strptime(i[11],'%d/%m/%Y')).date())
             db.session.add(pl)
             db.session.commit()
     return render_template('index.html', teams=list(full_name.keys()), clr=clr)
@@ -214,7 +222,7 @@ def displayFR():
 
 @main.route('/teams')
 def teams():
-    return render_template('teams.html', fn=full_name, clr=clr)
+    return render_template('teams.html', fn=full_name, clr=clr, champions=champions)
 
 @main.route('/<team>')
 def squad(team):

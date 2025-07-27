@@ -203,7 +203,7 @@ h3.section-title {
 </style>
 
 <center>
-  <div style="background-image: url('/static/images/banner_bg.jpg'); background-size: cover; background-attachment: fixed; padding: 40px 20px; background-color: rgba(255, 255, 255, 0.3);">
+  <div style="background-image: url('/static/images/banner_bg.jpg'); background-size: cover; background-attachment: fixed; padding: 30px 10px; background-color: rgba(255, 255, 255, 0.3);">
     <div class="marquee-container">
       <marquee style="font-weight: bold; font-family: 'Exo 2', sans-serif; transform: skew(-5deg)" width="60%" direction="left" scrollamount="8">
           <h1><b>Welcome to TATA WPL 2025 Info Tab</b></h1>
@@ -215,16 +215,16 @@ h3.section-title {
     </div>
 
     <div class="team-container">
-      <h3 class="section-title"><span class="section-title-highlight"><span style="color: #d5edff;">🔥 TATA WPL 2025 Teams 🔥</span></span></h3>
+      <h3 class="section-title"><span class="section-title-highlight"><span style="color: #d5edff;">🔥 TATA WPL 2025 🔥<br>Teams</span></span></h3>
       <div class="flex-container">
         {% for i in teams[:-1] %}
         <div class="card-wrapper">
 			<a href="{{ url_for('main.squad', team=i) }}">
 			<div class="card-inner">
-				<div class="card-front" style="--c1: {{ clr[i]['c1'] }}; --c2: {{ clr[i]['c2'] }};">
+				<div class="card-front" style="{% if i == 'RCBW' %} --c1: {{ clr[i]['c3'] }}; --c2: {{ clr[i]['c1'] }} {% elif i == 'GG' %} --c1: {{ clr[i]['c1'] }}; --c2: {{ clr[i]['c3'] }} {% else %} --c1: {{ clr[i]['c1'] }}; --c2: {{ clr[i]['c2'] }} {% endif %}">
 					<img class="card-image" src="/static/images/squad_logos/{{ i }}.webp" alt="{{ i }}">
 				</div>
-				<div class="card-back" style="--c1: {{ clr[i]['c1'] }}; --c2: {{ clr[i]['c2'] }};">
+				<div class="card-back" style="{% if i == 'RCBW' %} --c1: {{ clr[i]['c3'] }}; --c2: {{ clr[i]['c1'] }} {% elif i == 'GG' %} --c1: {{ clr[i]['c1'] }}; --c2: {{ clr[i]['c3'] }} {% else %} --c1: {{ clr[i]['c1'] }}; --c2: {{ clr[i]['c2'] }} {% endif %}">
 				{{ i | upper }}
 				</div>
 			</div>
