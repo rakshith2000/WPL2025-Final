@@ -390,6 +390,7 @@ def liveScore(match):
 @main.route('/match-<match>/scoreCard')
 def scoreCard(match):
     MatchDT = (db.session.execute(text('SELECT * FROM Fixture WHERE "Match_No" = :matchno'), {'matchno': match}).fetchall())[0]
+    SquadFull = (db.session.execute(text('SELECT * FROM Squad')).fetchall())
     MatchURL = render_live_URL(MatchDT[4], MatchDT[5], match, MatchDT[2])
     dttm = concat_DT(MatchDT[2], MatchDT[3])
     response = requests.get(MatchURL)
@@ -398,7 +399,9 @@ def scoreCard(match):
     MatchDT2.append(num_suffix(int(MatchDT[1])) + " Match" if MatchDT[1].isdigit() else MatchDT[1])
     MatchDT2.append(MatchDT[6].split(", ")[1])
     MatchDT2.append(num_suffix(MatchDT[2].day) + " " + MatchDT[2].strftime("%B %Y"))
-    return render_template('scorecard.html', match=match, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm)
+    current_date = datetime.now(tz)
+    current_date = current_date.replace(tzinfo=None)
+    return render_template('scorecard.html', match=match, cd=current_date, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm, sqf=SquadFull, clr2=clr, find_player=find_player, fn=full_name)
 
 @main.route('/match-<match>/liveSquad')
 def liveSquad(match):
