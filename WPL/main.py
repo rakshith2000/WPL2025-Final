@@ -36,6 +36,13 @@ full_name = {'DCW':'Delhi Capitals',
              'UPW':'UP Warriorz',
              'TBA':'TBA'}
 
+full_name2 = {'DCW':'Delhi Capitals Women',
+             'GG':'Gujarat Giants Women',
+             'MIW':'Mumbai Indians Women',
+             'RCBW':'Royal Challengers Bengaluru Women',
+             'UPW':'UP Warriorz Women',
+             'TBA':'TBA'}
+
 liveTN = {'DCW':['DEL-W','Delhi Capitals Women'],
           'GG':['GUJ-W','Gujarat Giants Women'],
           'MIW':['MUM-W','Mumbai Indians Women'],
@@ -134,27 +141,33 @@ def get_data_from_url(url):
         html = response.read().decode('utf-8')
     SquadDT = (db.session.execute(text('SELECT * FROM Squad')).fetchall())
     if response.getcode() == 200:
-        soup = BeautifulSoup(html, 'html.parser')
-        thead = soup.find('thead', class_="cb-srs-gray-strip")
-
-        headcells = soup.find_all('th')[1:]
-        headers = []
-        for i in headcells:
-            headers.append(i.text.strip())
-        tbody = soup.find('tbody')
-        data = []
-        for body in tbody.find_all('tr'):
-            bodycells = body.find_all('td')[1:]
-            d = {}
-            for i, val in enumerate(bodycells):
-                if i == 0:
-                    match = find_player(val.text.strip(), SquadDT)
-                    d['Team'] = match[3] if match else "NA"
-                    d[headers[i]] = match[2] if match else val.text.strip()
-                else:
-                    d[headers[i]] = val.text.strip()
-            data.append(d)
-        return data
+        try:
+            soup = BeautifulSoup(html, 'html.parser')
+            thead = soup.find('thead', class_="cb-srs-gray-strip")
+            
+            if thead is None:
+                return None
+                
+            headcells = soup.find_all('th')[1:]
+            headers = []
+            for i in headcells:
+                headers.append(i.text.strip())
+            tbody = soup.find('tbody')
+            data = []
+            for body in tbody.find_all('tr'):
+                bodycells = body.find_all('td')[1:]
+                d = {}
+                for i, val in enumerate(bodycells):
+                    if i == 0:
+                        match = find_player(val.text.strip(), SquadDT)
+                        d['Team'] = match[3] if match else "NA"
+                        d[headers[i]] = match[2] if match else val.text.strip()
+                    else:
+                        d[headers[i]] = val.text.strip()
+                data.append(d)
+            return data
+        except Exception:
+            return None
     else:
         return None
 
@@ -476,6 +489,44 @@ def todayMatch():
         current_date = datetime.now(tz)
         current_date = current_date.replace(tzinfo=None)
         return render_template('liveMatches.html', FR=dt, fn=full_name, current_date=current_date, clr=clr)
+
+@main.route('/battingstats')
+def battingstats():
+    stats = {}
+    stats['Most Runs'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/most-runs/0/0/0")
+    highest_scores = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/highest-score/0/0/0")
+    for hs in highest_scores:
+        hs['Vs'] = next(k for k, v in full_name2.items() if v == hs['Vs'])
+    stats['Highest Scores'] = highest_scores
+    stats['Best Batting Average'] = get_data_from_url(
+        "https://www.cricbuzz.com/api/html/series/9351/highest-avg/0/0/0")
+    stats['Best Batting Strike Rate'] = get_data_from_url(
+        "https://www.cricbuzz.com/api/html/series/9351/highest-sr/0/0/0")
+    stats['Most Hundreds'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/most-hundreds/0/0/0")
+    stats['Most Fifties'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/most-fifties/0/0/0")
+    stats['Most Fours'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/most-fours/0/0/0")
+    stats['Most Sixes'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/most-sixes/0/0/0")
+    stats['Most Nineties'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/most-nineties/0/0/0")
+    return render_template('battingStat.html', stats=stats)
+
+@main.route('/bowlingstats')
+def bowlingstats():
+    stats = {}
+    stats['Most Wickets'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/most-wickets/0/0/0")
+    stats['Best Bowling Average'] = get_data_from_url(
+        "https://www.cricbuzz.com/api/html/series/9351/lowest-avg/0/0/0")
+    best_bowling = get_data_from_url(
+        "https://www.cricbuzz.com/api/html/series/9351/best-bowling-innings/0/0/0")
+    for bb in best_bowling:
+        bb['Vs'] = next(k for k, v in full_name2.items() if v == bb['Vs'])
+    stats['Best Bowling'] = best_bowling
+    stats['Most 5 Wickets Haul'] = get_data_from_url(
+        "https://www.cricbuzz.com/api/html/series/9351/most-five-wickets/0/0/0")
+    stats['Best Economy'] = get_data_from_url("https://www.cricbuzz.com/api/html/series/9351/lowest-econ/0/0/0")
+    stats['Best Bowling Strike Rate'] = get_data_from_url(
+        "https://www.cricbuzz.com/api/html/series/9351/lowest-sr/0/0/0")
+
+    return render_template('bowlingStat.html', stats=stats)
 
 @main.route('/update')
 @login_required
