@@ -24,7 +24,6 @@
 <div style="background-image: url('/static/images/banner_bg.jpg'); padding-top: 79px; background-size: cover;
             background-attachment: fixed;">
 <center>
-<div>
   {% macro num_suffix(n) %}
     {% if n % 100 in [11, 12, 13] %}
         {{ n }}th
@@ -39,20 +38,7 @@
     {% endif %}
 {% endmacro %}
 
-    {% set teams = ['DCW', 'GG', 'MIW', 'RCBW', 'UPW'] %}
-    <a href="{{ url_for('main.displayFR', team='All') }}" 
-     class="custom-button {{ 'active' if hint == 'All' else '' }}">
-     All
-  </a>
-
-  {% for i in teams %}
-    <a href="{{ url_for('main.displayFR', team=i) }}" 
-       class="custom-button {{ 'active' if hint == i else '' }}">
-       {{ i }}
-    </a>
-  {% endfor %}
-</div>
-<div style="padding-bottom: 40px;"></div>
+<div style="padding-bottom: 20px;"></div>
 {% for i in FR[1:] %}
 {% if i[1] > current_date %}
 <a href="{{ url_for('main.FRScore', match=i[0]) }}" class="plain-link">
@@ -128,9 +114,9 @@
   <div class="timer-card border">
     <div class="header" style="text-align: center;">Match is In-Progress</div>
       <div class="vsblock" style="padding-top: 35px;">
-		<img class="team-image" style="{% if i[3] == 'RCBW' %} --c1: {{ clr[i[3]]['c2'] }}; --c2: {{ clr[i[3]]['c3'] }}; {% elif i[3] == 'GG' %} --c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c3'] }}; {% else %} --c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c2'] }};{% endif %}" src="\static\images\squad_logos\{{ i[3] }}.webp" alt="Team Logo" />
+		<img class="team-image" style="{% if i[3] == 'RCB' %} --c1: {{ clr[i[3]]['c3'] }}; --c2: {{ clr[i[3]]['c1'] }} {% elif i[3] == 'GT' %} --c1: {{ clr[i[3]]['c3'] }}; --c2: {{ clr[i[3]]['c2'] }} {% elif i[3] == 'MI' %} --c1: {{ clr[i[3]]['c3'] }}; --c2: {{ clr[i[3]]['c2'] }}  {% elif i[3] == 'PBKS' %} --c1: {{ clr[i[3]]['c2'] }}; --c2: {{ clr[i[3]]['c1'] }} {% elif i[3] == 'KKR' %} --c1: {{ clr[i[3]]['c2'] }}; --c2: {{ clr[i[3]]['c3'] }} {% else %} --c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c2'] }} {% endif %};" src="\static\images\squad_logos\{{ i[3] }}.png" alt="Team Logo" />
 		<img class="vs-image" src="\static\images\vs.png" alt="Team Logo" />
-		<img class="team-image" style="{% if i[4] == 'RCBW' %} --c1: {{ clr[i[4]]['c2'] }}; --c2: {{ clr[i[4]]['c3'] }}; {% elif i[4] == 'GG' %} --c1: {{ clr[i[4]]['c1'] }}; --c2: {{ clr[i[4]]['c3'] }}; {% else %} --c1: {{ clr[i[4]]['c1'] }}; --c2: {{ clr[i[4]]['c2'] }};{% endif %}" src="\static\images\squad_logos\{{ i[4] }}.webp" alt="Team Logo" />
+		<img class="team-image" style="{% if i[4] == 'RCB' %} --c1: {{ clr[i[4]]['c3'] }}; --c2: {{ clr[i[4]]['c1'] }} {% elif i[4] == 'GT' %} --c1: {{ clr[i[4]]['c3'] }}; --c2: {{ clr[i[4]]['c2'] }} {% elif i[4] == 'MI' %} --c1: {{ clr[i[4]]['c3'] }}; --c2: {{ clr[i[4]]['c2'] }}  {% elif i[4] == 'PBKS' %} --c1: {{ clr[i[4]]['c2'] }}; --c2: {{ clr[i[4]]['c1'] }} {% elif i[4] == 'KKR' %} --c1: {{ clr[i[4]]['c2'] }}; --c2: {{ clr[i[4]]['c3'] }} {% else %} --c1: {{ clr[i[4]]['c1'] }}; --c2: {{ clr[i[4]]['c2'] }} {% endif %};" src="\static\images\squad_logos\{{ i[4] }}.png" alt="Team Logo" />
 </div>
   </div>
 </div></a>
@@ -171,7 +157,7 @@
         <span class="team-name" full="{{ fn[TA] }}" short="{{ TA }}" style="color: {{ TAclr }}; font-weight: bold">{{ fn[TA] }}</span>
       </div>
       <div class="score-wrapper">
-        <div class="score" style="color: {{ TAclr }}">{{ TA_S['runs'] }}{{ "" if TA_S['wkts'] == 10 else '/' ~ TA_S['wkts'] }} ({{ TA_S['overs'] }})</div>
+        <div class="score" style="color: {{ TAclr }}">{{ TA_S['runs'] }}-{{ TA_S['wkts'] }} ({{ TA_S['overs'] }})</div>
       </div>
   </div>
       <!-- Team B -->
@@ -182,7 +168,7 @@
         <span class="team-name" full="{{ fn[TB] }}" short="{{ TB }}" style="color: {{ TBclr }}; font-weight: bold">{{ fn[TB] }}</span>
       </div>
       <div class="score-wrapper">
-        <div class="score" style="color: {{ TBclr }}">{{ TB_S['runs'] }}{{ "" if TB_S['wkts'] == 10 else '/' ~ TB_S['wkts'] }} ({{ TB_S['overs'] }})</div>
+        <div class="score" style="color: {{ TBclr }}">{{ TB_S['runs'] }}-{{ TB_S['wkts'] }} ({{ TB_S['overs'] }})</div>
       </div>
   </div>
       <div class="result"><span class="team-name" full="{{ fn[i[7]] }}" short="{{ i[7] }}">{{ fn[i[7]] }}</span> {{ i[10] }}</div>
@@ -190,9 +176,9 @@
   <div class="timer-card border">
     <div class="header" style="text-align: center;">Match Completed</div>
       <div class="vsblock" style="padding-top: 10px;">
-		<img class="team-image" style="{% if i[3] == 'RCBW' %} --c1: {{ clr[i[3]]['c2'] }}; --c2: {{ clr[i[3]]['c3'] }}; {% elif i[3] == 'GG' %} --c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c3'] }}; {% else %} --c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c2'] }};{% endif %}" src="\static\images\squad_logos\{{ i[3] }}.webp" alt="Team Logo" />
+		<img class="team-image" style="{% if i[3] == 'RCB' %} --c1: {{ clr[i[3]]['c3'] }}; --c2: {{ clr[i[3]]['c1'] }} {% elif i[3] == 'GT' %} --c1: {{ clr[i[3]]['c3'] }}; --c2: {{ clr[i[3]]['c2'] }} {% elif i[3] == 'MI' %} --c1: {{ clr[i[3]]['c3'] }}; --c2: {{ clr[i[3]]['c2'] }}  {% elif i[3] == 'PBKS' %} --c1: {{ clr[i[3]]['c2'] }}; --c2: {{ clr[i[3]]['c1'] }} {% elif i[3] == 'KKR' %} --c1: {{ clr[i[3]]['c2'] }}; --c2: {{ clr[i[3]]['c3'] }} {% else %} --c1: {{ clr[i[3]]['c1'] }}; --c2: {{ clr[i[3]]['c2'] }} {% endif %};" src="\static\images\squad_logos\{{ i[3] }}.png" alt="Team Logo" />
 		<img class="vs-image" src="\static\images\vs.png" alt="Team Logo" />
-		<img class="team-image" style="{% if i[4] == 'RCBW' %} --c1: {{ clr[i[4]]['c2'] }}; --c2: {{ clr[i[4]]['c3'] }}; {% elif i[4] == 'GG' %} --c1: {{ clr[i[4]]['c1'] }}; --c2: {{ clr[i[4]]['c3'] }}; {% else %} --c1: {{ clr[i[4]]['c1'] }}; --c2: {{ clr[i[4]]['c2'] }};{% endif %}" src="\static\images\squad_logos\{{ i[4] }}.webp" alt="Team Logo" />
+		<img class="team-image" style="{% if i[4] == 'RCB' %} --c1: {{ clr[i[4]]['c3'] }}; --c2: {{ clr[i[4]]['c1'] }} {% elif i[4] == 'GT' %} --c1: {{ clr[i[4]]['c3'] }}; --c2: {{ clr[i[4]]['c2'] }} {% elif i[4] == 'MI' %} --c1: {{ clr[i[4]]['c3'] }}; --c2: {{ clr[i[4]]['c2'] }}  {% elif i[4] == 'PBKS' %} --c1: {{ clr[i[4]]['c2'] }}; --c2: {{ clr[i[4]]['c1'] }} {% elif i[4] == 'KKR' %} --c1: {{ clr[i[4]]['c2'] }}; --c2: {{ clr[i[4]]['c3'] }} {% else %} --c1: {{ clr[i[4]]['c1'] }}; --c2: {{ clr[i[4]]['c2'] }} {% endif %};" src="\static\images\squad_logos\{{ i[4] }}.png" alt="Team Logo" />
 </div>
       <div class="result" style="width: 80%;">{{ fn[i[7]] }} {{ i[10] }}</div>
   </div>
@@ -212,7 +198,10 @@
       const secondsSpan = clockElement.querySelector(".seconds");
 
       const interval = setInterval(function () {
-        const now = new Date().getTime();
+        const Tnow = new Date();
+        const timeZone = 'Asia/Kolkata';
+        const dateInTimeZone = new Date(Tnow.toLocaleString('en-US', { timeZone }));
+        const now = dateInTimeZone.getTime();
         const t = deadline - now;
 
         if (t < 0) {
@@ -237,7 +226,9 @@
     }
 
     // Initialize timers for all clock elements
-    document.querySelectorAll(".clockdiv").forEach(createTimer);
+    document.querySelectorAll(".clockdiv").forEach(function(clockElement) {
+  createTimer(clockElement); // This will start the timer instantly
+});
 
     </script>
     <script>
@@ -261,59 +252,5 @@
     window.addEventListener('resize', updateTeamNames);
     window.addEventListener('load', updateTeamNames);
   </script>
-        <script>
-	window.onload = function() {
-  // Get the current date and time
-  const currentDate = new Date();
 
-  // Find all match elements
-  const matches = document.querySelectorAll('.main-container');
-  let targetMatch = null;
-
-  matches.forEach(function(match) {
-    // Get the match deadline (data-deadline attribute)
-    const matchDate = new Date(match.querySelector('.header').getAttribute('data-deadline'));
-
-    // Get the result element that contains the match status (e.g., "In Progress" or "Starts Sat, 22 Mar . 07:30 PM IST")
-    const resultElement = match.querySelector('.result');
-
-    // Determine if the match is ongoing (if the result is "In Progress")
-    const isOngoing = resultElement && resultElement.textContent.trim() === 'Match is In-Progress';
-
-    // Check if the match is upcoming (has a future date)
-    const isUpcoming = matchDate > currentDate;
-
-    if (isUpcoming) {
-      // If the match is upcoming and no target match has been set yet, or if this is the closest upcoming match
-      if (!targetMatch || matchDate < new Date(targetMatch.querySelector('.header').getAttribute('data-deadline'))) {
-        targetMatch = match; // This will be the closest upcoming match
-      }
-    } else if (isOngoing) {
-      // If the match is ongoing and no target match has been set yet
-      targetMatch = match; // This will be the ongoing match
-    }
-  });
-
-  // If no upcoming or ongoing match was found, look for the last completed match
-  if (!targetMatch) {
-    const completedMatches = Array.from(matches).filter(function(match) {
-      const resultElement = match.querySelector('.result');
-      return resultElement && resultElement.textContent.trim() !== 'Match is In-Progress';
-    });
-
-    // If there are completed matches, select the most recent one
-    if (completedMatches.length > 0) {
-      targetMatch = completedMatches[completedMatches.length - 1]; // Last completed match
-    }
-  }
-
-  // Scroll to the selected target match if found
-  if (targetMatch) {
-    targetMatch.scrollIntoView({ behavior: 'smooth' });
-    const offset = 91; // Padding value
-      const targetPosition = targetMatch.getBoundingClientRect().top + window.pageYOffset;
-      window.scrollTo({ top: targetPosition - offset, behavior: 'smooth' });
-  }
-};
-</script>
 {% endblock %}
