@@ -7,6 +7,10 @@ from flask import Blueprint, render_template, url_for, redirect, request, flash,
 from flask_login import login_required, current_user
 from sqlalchemy import and_, or_
 from sqlalchemy.sql import text
+import requests
+from bs4 import BeautifulSoup
+from fuzzywuzzy import fuzz, process
+from urllib.request import Request, urlopen
 
 main = Blueprint('main', __name__)
 
@@ -18,7 +22,7 @@ liveURL_Prefix = "https://cmc2.sportskeeda.com/live-cricket-score/"
 liveURL_Suffix = "/ajax"
 
 champions = {
-    'MIW':    ['2023', '2025'],
+    'MIW':   ['2023', '2025'],
     'UPW':   [],
     'DCW':   [],
     'RCBW':  ['2024'],
@@ -58,6 +62,101 @@ ptclr = {'DCW':{'c1':'#024c8d', 'c2':'#04046c', 'c3':'#e00034'},
         'MIW':{'c1':'#0077b6', 'c2':'#004ba0', 'c3':'#aa9174'},
         'RCBW':{'c1':'#e40719', 'c2':'#7e2a20', 'c3':'#2b2a29'},
         'UPW': {'c1': '#6e30bb', 'c2': '#3c0070', 'c3':'#f4c404'}}
+
+def normalize_name(name):
+    """Normalize names for better matching"""
+    # Remove special characters and extra spaces
+    name = re.sub(r'[^a-zA-Z ]', '', name.lower()).strip()
+    # Handle common name variations
+    name = name.replace('mohd', 'mohammed').replace('md', 'mohammed')
+    return ' '.join(sorted(name.split()))  # Sort name parts for order-independent matching
+
+def find_player(full_name, player_data, threshold=80):
+    """
+    Find the best matching player in the database
+
+    Args:
+        full_name (str): Name to search for (e.g., "Akash Naman Singh")
+        player_data (list): List of player tuples from database
+        threshold (int): Minimum match score (0-100)
+
+    Returns:
+        tuple: Best matching player record or None
+    """
+    # Extract just the names from player data (3rd element in each tuple)
+    player_names = [player[2] for player in player_data]
+
+    # First try exact match
+    normalized_search = normalize_name(full_name)
+    for i, player in enumerate(player_data):
+        if normalize_name(player[2]) == normalized_search:
+            return player
+
+    # Then try fuzzy matching with multiple strategies
+    strategies = [
+        (fuzz.token_set_ratio, "token set ratio"),
+        (fuzz.token_sort_ratio, "token sort ratio"),
+        (fuzz.partial_ratio, "partial ratio"),
+        (fuzz.WRatio, "weighted ratio")
+    ]
+
+    best_match = None
+    best_score = 0
+
+    for player in player_data:
+        db_name = player[2]
+        for strategy, _ in strategies:
+            score = strategy(full_name, db_name)
+            if score > best_score:
+                best_score = score
+                best_match = player
+                if best_score == 100:  # Perfect match
+                    return best_match
+
+    # Also check initials match (e.g., "A. N. Singh" vs "Akash Naman Singh")
+    if best_score < threshold:
+        search_initials = ''.join([word[0] for word in full_name.split() if len(word) > 1])
+        for player in player_data:
+            db_name = player[2]
+            db_initials = ''.join([word[0] for word in db_name.split() if len(word) > 1 and word[0].isupper()])
+            if db_initials and search_initials == db_initials:
+                return player
+
+    return best_match if best_score >= threshold else None
+
+def get_data_from_url(url):
+    headers = {
+        'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.447.124 Safari/537.36',
+        'Accept-Language' : 'en-US,en;q=0.9',
+    }
+    req = Request(url, headers=headers)
+    with urlopen(req) as response:
+        html = response.read().decode('utf-8')
+    SquadDT = (db.session.execute(text('SELECT * FROM Squad')).fetchall())
+    if response.getcode() == 200:
+        soup = BeautifulSoup(html, 'html.parser')
+        thead = soup.find('thead', class_="cb-srs-gray-strip")
+
+        headcells = soup.find_all('th')[1:]
+        headers = []
+        for i in headcells:
+            headers.append(i.text.strip())
+        tbody = soup.find('tbody')
+        data = []
+        for body in tbody.find_all('tr'):
+            bodycells = body.find_all('td')[1:]
+            d = {}
+            for i, val in enumerate(bodycells):
+                if i == 0:
+                    match = find_player(val.text.strip(), SquadDT)
+                    d['Team'] = match[3] if match else "NA"
+                    d[headers[i]] = match[2] if match else val.text.strip()
+                else:
+                    d[headers[i]] = val.text.strip()
+            data.append(d)
+        return data
+    else:
+        return None
 
 def oversAdd(a, b):
     A, B = round(int(a)*6 + (a-int(a))*10, 0), round(int(b)*6 + (b-int(b))*10, 2)
@@ -268,11 +367,14 @@ def matchInfo(match):
     MatchDT2.append(num_suffix(int(MatchDT[1]))+" Match" if MatchDT[1].isdigit() else MatchDT[1])
     MatchDT2.append(MatchDT[6].split(", ")[1])
     MatchDT2.append(num_suffix(MatchDT[2].day)+" "+MatchDT[2].strftime("%B %Y"))
-    return render_template('info.html', match=match, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm)
+    current_date = datetime.now(tz)
+    current_date = current_date.replace(tzinfo=None)
+    return render_template('info.html', match=match, cd=current_date, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm)
 
 @main.route('/match-<match>/liveScore')
 def liveScore(match):
     MatchDT = (db.session.execute(text('SELECT * FROM Fixture WHERE "Match_No" = :matchno'),{'matchno': match}).fetchall())[0]
+    SquadFull = (db.session.execute(text('SELECT * FROM Squad')).fetchall())
     MatchURL = render_live_URL(MatchDT[4], MatchDT[5], match, MatchDT[2])
     dttm = concat_DT(MatchDT[2], MatchDT[3])
     response = requests.get(MatchURL)
@@ -281,7 +383,9 @@ def liveScore(match):
     MatchDT2.append(num_suffix(int(MatchDT[1])) + " Match" if MatchDT[1].isdigit() else MatchDT[1])
     MatchDT2.append(MatchDT[6].split(", ")[1])
     MatchDT2.append(num_suffix(MatchDT[2].day) + " " + MatchDT[2].strftime("%B %Y"))
-    return render_template('live.html', match=match, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm)
+    current_date = datetime.now(tz)
+    current_date = current_date.replace(tzinfo=None)
+    return render_template('live.html', match=match, cd=current_date, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm, clr=ptclr, clr2=clr, sqf=SquadFull, find_player=find_player, fn=full_name)
 
 @main.route('/match-<match>/scoreCard')
 def scoreCard(match):
@@ -295,6 +399,23 @@ def scoreCard(match):
     MatchDT2.append(MatchDT[6].split(", ")[1])
     MatchDT2.append(num_suffix(MatchDT[2].day) + " " + MatchDT[2].strftime("%B %Y"))
     return render_template('scorecard.html', match=match, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm)
+
+@main.route('/match-<match>/liveSquad')
+def liveSquad(match):
+    MatchDT = (db.session.execute(text('SELECT * FROM Fixture WHERE "Match_No" = :matchno'), {'matchno': match}).fetchall())[0]
+    SquadFull = (db.session.execute(text('SELECT * FROM Squad')).fetchall())
+    SquadDT = (db.session.execute(text('SELECT * FROM Squad WHERE "Captain" = :captain OR "Overseas" = :overseas'), {'captain': 'Y', 'overseas': 'Y'}).fetchall())
+    MatchURL = render_live_URL(MatchDT[4], MatchDT[5], match, MatchDT[2])
+    dttm = concat_DT(MatchDT[2], MatchDT[3])
+    response = requests.get(MatchURL)
+    MatchLDT = response.json()
+    MatchDT2 = []
+    MatchDT2.append(num_suffix(int(MatchDT[1])) + " Match" if MatchDT[1].isdigit() else MatchDT[1])
+    MatchDT2.append(MatchDT[6].split(", ")[1])
+    MatchDT2.append(num_suffix(MatchDT[2].day) + " " + MatchDT[2].strftime("%B %Y"))
+    current_date = datetime.now(tz)
+    current_date = current_date.replace(tzinfo=None)
+    return render_template('livesquad.html', match=match, cd=current_date, dt1=MatchDT, dt2=MatchDT2, dt3=MatchLDT, tid=teamID, dttm=dttm, sqd=SquadDT, sqf=SquadFull, find_player=find_player)
 
 @main.route('/match-<match>/FRScore')
 def FRScore(match):
