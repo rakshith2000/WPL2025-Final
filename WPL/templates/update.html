@@ -134,6 +134,33 @@
         </div>
     </div>
 </div>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-9" style="margin: 0 auto">
+            <div class="jumbotron p-3">
+                <h5>To <u>Update</u> <b>Eliminated Teams   </b>   </h5>
+                {% if key == '5' %}
+                {{ flashes() }}
+                {% endif %}
+                <form method="POST" action="/updateelimination">
+                    <label for="eteam">Select Eliminated Team: </label>
+                    <select name="eteam" id="eteam" required="required">
+                        <option value="" disabled selected>----Select----</option>
+                        <option value="DCW">Delhi Capitals</option>
+                        <option value="GG">Gujarat Giants</option>
+                        <option value="MIW">Mumbai Indians</option>
+                        <option value="RCBW">Royal Challengers Bengaluru</option>
+                        <option value="UPW">UP Warriorz</option>
+                    </select>
+                    <input type="hidden" name="hint" value="before">
+                    <br>
+                    <button type="submit" class="btn btn-success">Click Here</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 </center>
 
