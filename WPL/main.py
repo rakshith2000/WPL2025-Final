@@ -70,6 +70,14 @@ ptclr = {'DCW':{'c1':'#024c8d', 'c2':'#04046c', 'c3':'#e00034'},
         'RCBW':{'c1':'#e40719', 'c2':'#7e2a20', 'c3':'#2b2a29'},
         'UPW': {'c1': '#6e30bb', 'c2': '#3c0070', 'c3':'#f4c404'}}
 
+sqclr = {
+    'DCW': {'c1': 'hsl(346 100% 44%)', 'c2': 'hsl(213 100% 25%)'},
+    'GG': {'c1': 'hsl(41 88% 61%)', 'c2': 'hsl(3 69% 53%)'},
+    'MIW': {'c1': 'hsl(32 24% 56%)', 'c2': 'hsl(208 100% 31%)'},
+    'RCBW': {'c1': 'hsl(356 99% 45%)', 'c2': 'hsl(0 0% 3%)'},
+    'UPW': {'c1': 'hsl(338 81% 62%)', 'c2': 'hsl(273 46% 31%)'}
+}
+
 def normalize_name(name):
     """Normalize names for better matching"""
     # Remove special characters and extra spaces
@@ -358,7 +366,7 @@ def teams():
 @main.route('/<team>')
 def squad(team):
     sq = Squad.query.filter_by(Team=team).order_by(Squad.Player_ID).all()
-    return render_template('squad.html', team=team, sq=sq, fn=full_name[team], clr=clr[team])
+    return render_template('squad.html', team=team, sq=sq, fn=full_name[team], clr=clr[team], sqclr=sqclr[team])
 
 @main.route('/<team>/squad_details/<name>')
 def squad_details(team, name):
@@ -366,7 +374,7 @@ def squad_details(team, name):
     current_date = datetime.now(tz)
     current_date = current_date.replace(tzinfo=None)
     age = calculate_age(sq.DOB, current_date)
-    return render_template('squad_details.html', sq=sq, clr=clr[team], team=team, age=age)
+    return render_template('squad_details.html', sq=sq, clr=clr[team], team=team, age=age, sqclr=sqclr[team])
 
 @main.route('/match-<match>/matchInfo')
 def matchInfo(match):
