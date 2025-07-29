@@ -361,7 +361,7 @@ def displayFR():
 
 @main.route('/teams')
 def teams():
-    return render_template('teams.html', fn=full_name, clr=clr, champions=champions)
+    return render_template('teams.html', fn=full_name, clr=clr, champions=champions, sqclr=sqclr)
 
 @main.route('/<team>')
 def squad(team):
